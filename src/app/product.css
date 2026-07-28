@@ -1,0 +1,484 @@
+/* ==========================================================================
+   Página de detalhe do produto (/produto/[slug]) + 404 global.
+   Prefixo .pd- ("product detail") para não colidir com o design system
+   de globals.css nem com o CSS das outras páginas.
+   ========================================================================== */
+
+/* =============================  BREADCRUMB  ============================== */
+
+/* O .breadcrumb do globals.css não tem espaçamento próprio — a página é que
+   compensa a navbar fixa (80px) e alinha com a largura do conteúdo. */
+.pd-crumbs {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 104px 56px 0;
+}
+
+/* ==============================  LAYOUT  ================================= */
+
+.pd-layout {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 64px;
+  padding: 40px 56px 80px;
+  max-width: 1500px;
+  margin: 0 auto;
+  align-items: start;
+}
+/* Sem min-width:0 a coluna de texto estoura o grid quando a descrição é longa. */
+.pd-info {
+  min-width: 0;
+}
+
+/* ==============================  GALERIA  ================================ */
+
+.pd-gallery {
+  position: sticky;
+  top: 100px;
+}
+.pd-main-img {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--s3);
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+  margin-bottom: 12px;
+}
+/* 6% de padding reproduz o max-width:88% do layout original com next/image fill. */
+.pd-main-img img {
+  object-fit: contain;
+  padding: 6%;
+  transition: transform 0.4s ease;
+}
+.pd-main-img:hover img {
+  transform: scale(1.03);
+}
+.pd-img-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1;
+  background: var(--neon);
+  color: #0a0a0a;
+  font-family: var(--fc);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 2px;
+}
+.pd-line-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--s3);
+  color: var(--gray-lt);
+  font-family: var(--fc);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 2px;
+}
+[data-theme='light'] .pd-line-badge {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--white);
+}
+
+.pd-glance {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  list-style: none;
+}
+.pd-glass {
+  background: var(--s1);
+  border: 1px solid var(--s3);
+  border-radius: 4px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+.pd-glass-v {
+  font-family: var(--fd);
+  font-size: 24px;
+  color: var(--neon-ink);
+  line-height: 1;
+}
+.pd-glass-l {
+  font-family: var(--fc);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ===========================  COLUNA DE INFO  ============================ */
+
+.pd-cat {
+  font-family: var(--fc);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--neon-ink);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.pd-name {
+  font-family: var(--fd);
+  font-size: clamp(48px, 6vw, 84px);
+  line-height: 0.92;
+  letter-spacing: -0.005em;
+  /* O original chamava .toUpperCase(); no CSS o texto acessível fica intacto. */
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.pd-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--neon-dim);
+  border: 1px solid rgba(57, 255, 20, 0.25);
+  color: var(--neon-ink);
+  font-family: var(--fc);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 100px;
+  margin-bottom: 14px;
+}
+.pd-desc {
+  font-size: 17px;
+  color: var(--gray-lt);
+  line-height: 1.65;
+  max-width: 520px;
+  margin-bottom: 24px;
+}
+
+/* ============================  BLOCO DE PREÇO  =========================== */
+
+.pd-price-block {
+  position: relative;
+  overflow: hidden;
+  background: var(--s1);
+  border: 1px solid var(--s3);
+  border-radius: 6px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.pd-price-block::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--neon);
+}
+.pd-price-lbl {
+  font-family: var(--fc);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.pd-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.pd-price {
+  font-family: var(--fd);
+  font-size: 50px;
+  color: var(--white);
+  line-height: 1;
+}
+.pd-price-old {
+  font-size: 20px;
+  color: var(--gray);
+  text-decoration: line-through;
+}
+.pd-installment {
+  font-size: 16px;
+  color: var(--gray);
+  margin-top: 2px;
+}
+.pd-installment strong {
+  color: var(--neon-ink);
+}
+.pd-pix {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(57, 255, 20, 0.12);
+  border: 1px solid rgba(57, 255, 20, 0.3);
+  color: var(--neon-ink);
+  font-family: var(--fc);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 6px 14px;
+  border-radius: 100px;
+  margin-top: 12px;
+}
+
+/* ==============================  AÇÕES  ================================== */
+
+.pd-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.pd-btn-buy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  background: var(--wa);
+  color: #fff;
+  padding: 18px 32px;
+  border: none;
+  border-radius: 3px;
+  font-family: var(--fc);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+.pd-btn-buy:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 36px rgba(37, 211, 102, 0.45);
+}
+.pd-btn-test {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  background: transparent;
+  color: var(--neon-ink);
+  padding: 14px 32px;
+  border: 1px solid rgba(57, 255, 20, 0.3);
+  border-radius: 3px;
+  font-family: var(--fc);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.pd-btn-test:hover {
+  background: var(--neon-dim);
+}
+
+/* =====================  ENTREGA / GARANTIA / RETIRADA  =================== */
+
+.pd-perks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  list-style: none;
+}
+.pd-perk {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  color: var(--gray);
+}
+.pd-perk svg {
+  flex-shrink: 0;
+  color: var(--neon-ink);
+}
+.pd-perk strong {
+  color: var(--white);
+  font-weight: 600;
+}
+
+/* ==========================  SEÇÕES INFERIORES  ========================== */
+
+.pd-sec {
+  padding: 0 56px 80px;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+/* Modificador: o título destas seções respira mais que o padrão do .sec-ttl. */
+.pd-sec-ttl {
+  margin-bottom: 36px;
+}
+
+/* ===========================  FICHA TÉCNICA  ============================= */
+
+.pd-spec-table {
+  background: var(--s1);
+  border: 1px solid var(--s3);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.pd-spec-row {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  border-bottom: 1px solid var(--s3);
+  /* opacity/transform repetidos de propósito: a linha também é um .rev e, sem
+     eles aqui, esta regra sobrescreveria a transição do scroll reveal. */
+  transition:
+    background 0.15s,
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+.pd-spec-row:last-child {
+  border-bottom: none;
+}
+.pd-spec-row:hover {
+  background: var(--s2);
+}
+.pd-spec-lbl {
+  display: flex;
+  align-items: center;
+  font-family: var(--fc);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 18px 24px;
+  border-right: 1px solid var(--s3);
+}
+.pd-spec-val {
+  font-family: var(--fb);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--white);
+  padding: 18px 24px;
+}
+
+/* =========================  PRODUTOS RELACIONADOS  ======================= */
+
+/* Reaproveita o .pgrid (inclusive o "esconde a descrição") só trocando as
+   colunas. Dois seletores de classe para vencer o .pgrid do globals
+   independentemente da ordem em que os CSS entram no bundle.
+   auto-fit em vez de repeat(4,1fr) porque a categoria "pranchas" só tem 3
+   produtos — com 2 relacionados as colunas vazias somem em vez de deixar
+   meia linha em branco. */
+.pgrid.pd-rel-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* ===============================  404  =================================== */
+
+.pd-404 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  padding: 180px 56px 120px;
+}
+.pd-404-num {
+  font-family: var(--fd);
+  font-size: clamp(96px, 18vw, 180px);
+  line-height: 0.9;
+  color: var(--neon-ink);
+  text-shadow: 0 0 40px var(--neon-glow);
+}
+.pd-404-txt {
+  font-size: 20px;
+  color: var(--gray);
+  max-width: 480px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+/* ============================  RESPONSIVO  =============================== */
+
+@media (max-width: 1000px) {
+  .pd-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 32px 24px 60px;
+  }
+  .pd-gallery {
+    position: static;
+  }
+  .pgrid.pd-rel-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pd-spec-row {
+    grid-template-columns: 1fr;
+  }
+  .pd-spec-lbl {
+    border-right: none;
+    border-bottom: 1px solid var(--s3);
+    padding: 14px 20px 8px;
+  }
+  .pd-spec-val {
+    padding: 8px 20px 14px;
+  }
+}
+
+@media (max-width: 900px) {
+  .pd-crumbs {
+    padding: 104px 24px 0;
+  }
+  .pd-sec {
+    padding: 0 24px 60px;
+  }
+  .pd-404 {
+    padding: 150px 24px 90px;
+  }
+}
+
+@media (max-width: 600px) {
+  .pd-crumbs {
+    padding: 96px 20px 0;
+  }
+  .pd-layout {
+    padding: 24px 20px 48px;
+  }
+  .pd-sec {
+    padding: 0 20px 48px;
+  }
+  .pgrid.pd-rel-grid {
+    grid-template-columns: 1fr;
+  }
+  .pd-price {
+    font-size: 40px;
+  }
+  .pd-404 {
+    padding: 130px 20px 70px;
+  }
+}
+
+/* O globals.css já zera durações; aqui zeramos também os deslocamentos. */
+@media (prefers-reduced-motion: reduce) {
+  .pd-main-img:hover img,
+  .pd-btn-buy:hover {
+    transform: none;
+  }
+}

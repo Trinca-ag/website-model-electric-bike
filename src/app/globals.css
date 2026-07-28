@@ -1,0 +1,1042 @@
+/* ==========================================================================
+   Design system
+   Consolida o CSS que estava duplicado em index/produtos/produto.html.
+   As variáveis de fonte (--fd/--fb/--fc) vêm do next/font em layout.tsx.
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --neon: #39ff14;
+  /* --neon é a cor de PREENCHIMENTO (fundos, bordas, barras). Para TEXTO e
+     ícones existe --neon-ink: no tema claro o neon puro dá ~1,1:1 sobre
+     #F5F5F3, ilegível. Quem fica sobre fundo escuro mesmo no tema claro
+     (hero, cards de categoria) redeclara --neon-ink localmente. */
+  --neon-ink: var(--neon);
+  --neon-glow: rgba(57, 255, 20, 0.3);
+  --neon-dim: rgba(57, 255, 20, 0.08);
+  --neon-border: rgba(57, 255, 20, 0.28);
+  --black: #0a0a0a;
+  --s1: #111111;
+  --s2: #181818;
+  --s3: #242424;
+  --white: #ffffff;
+  --off: #f2f2f2;
+  --gray: #888;
+  --gray-lt: #bfbfbf;
+  --nav: 80px;
+  --nav-bg: rgba(10, 10, 10, 0.93);
+  --nav-panel: rgba(10, 10, 10, 0.97);
+  --wa: #25d366;
+
+  color-scheme: dark;
+}
+
+[data-theme='light'] {
+  /* Verde escuro da mesma família: 5,3:1 sobre #F5F5F3 e 4,9:1 sobre #EBEBEB. */
+  --neon-ink: #0b7300;
+  --black: #f5f5f3;
+  --s1: #ebebeb;
+  --s2: #e0e0e0;
+  --s3: #d0d0d0;
+  --white: #0a0a0a;
+  --off: #111;
+  --gray: #666;
+  --gray-lt: #333;
+  --nav-bg: rgba(245, 245, 243, 0.93);
+  --nav-panel: rgba(245, 245, 243, 0.97);
+
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Compensa a navbar fixa quando se navega para #unidades / #test-ride. */
+  scroll-padding-top: calc(var(--nav) + 16px);
+}
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--fb);
+  overflow-x: hidden;
+  transition:
+    background 0.4s,
+    color 0.4s;
+}
+
+img,
+video {
+  max-width: 100%;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+}
+::-webkit-scrollbar-track {
+  background: var(--black);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--neon);
+  border-radius: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--neon-ink);
+  outline-offset: 2px;
+}
+
+/* Acessibilidade: quem pede menos movimento não recebe animação nenhuma. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ==========================  BARRA DE PROGRESSO  ========================= */
+
+#prog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: var(--neon);
+  z-index: 9999;
+  width: 100%;
+  box-shadow: 0 0 8px var(--neon);
+  pointer-events: none;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  will-change: transform;
+}
+
+/* ==============================  NAVBAR  ================================= */
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  padding: 0 56px;
+  gap: 40px;
+  transition:
+    background 0.3s,
+    border 0.3s;
+}
+.nav.scrolled {
+  background: var(--nav-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(57, 255, 20, 0.12);
+}
+.nav-logo {
+  font-size: 26px;
+  line-height: 58px;
+  flex-shrink: 0;
+}
+
+/* Wordmark em texto no lugar de uma imagem: acompanha o tema por herança de
+   cor, não pede uma segunda variante de arquivo e não custa request nenhum. */
+.wordmark {
+  display: block;
+  font-family: var(--fd);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--white);
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+/* text-decoration do <a> pai não pode ser cancelada pelo filho — precisa
+   estar no próprio link. */
+.logo-link {
+  text-decoration: none;
+}
+.logo-link:hover .wordmark {
+  color: var(--neon-ink);
+}
+.wordmark-accent {
+  color: var(--neon-ink);
+}
+.nav-links {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+  flex: 1;
+}
+.nav-links a {
+  color: var(--gray-lt);
+  text-decoration: none;
+  font-family: var(--fc);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  position: relative;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--neon);
+  transition: width 0.3s;
+}
+.nav-links a:hover,
+.nav-links a.active {
+  color: var(--neon-ink);
+}
+.nav-links a:hover::after,
+.nav-links a.active::after {
+  width: 100%;
+}
+/* Navbar transparente SOBRE um cabeçalho escuro: o vídeo da home (`.hero`) ou
+   a foto das rotas de categoria (`.page-hero.has-bg`).
+   No tema claro, --gray-lt vira #333 e os links sumiriam no fundo (~1,6:1).
+   O `:has` prende a regra à presença desse cabeçalho no documento em vez do
+   arquivo CSS — em navegação client-side o home.css continua carregado, então
+   uma regra baseada no arquivo apagaria a navbar de /produtos, cujo cabeçalho
+   é claro e onde #333 é justamente a cor certa. */
+[data-theme='light'] body:has(.hero, .page-hero.has-bg) .nav:not(.scrolled) .nav-links a,
+[data-theme='light'] body:has(.hero, .page-hero.has-bg) .nav:not(.scrolled) .nav-toggle {
+  color: rgba(255, 255, 255, 0.88);
+}
+[data-theme='light'] body:has(.hero, .page-hero.has-bg) .nav:not(.scrolled) .nav-links a:hover,
+[data-theme='light'] body:has(.hero, .page-hero.has-bg) .nav:not(.scrolled) .nav-links a.active {
+  color: var(--neon);
+}
+[data-theme='light'] body:has(.hero, .page-hero.has-bg) .nav:not(.scrolled) .wordmark {
+  color: #fff;
+}
+[data-theme='light'] body:has(.hero, .page-hero.has-bg) .nav:not(.scrolled) .wordmark-accent {
+  color: var(--neon);
+}
+/* O menu mobile é um painel sólido — não fica sobre o vídeo, mantém o #333. */
+@media (max-width: 900px) {
+  [data-theme='light'] body:has(.hero, .page-hero.has-bg) .nav:not(.scrolled) .nav-links a {
+    color: var(--gray-lt);
+  }
+}
+
+/* Faixa entre o menu mobile (≤900px) e o desktop folgado. Com os links em 15px
+   a barra precisa de ~931px para caber, então entre 901 e 1040 apertamos os
+   espaçamentos em vez de encolher a fonte de novo. */
+@media (min-width: 901px) and (max-width: 1040px) {
+  .nav {
+    padding: 0 32px;
+    gap: 24px;
+  }
+  .nav-links {
+    gap: 16px;
+  }
+}
+
+.nav-acts {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.nav-btn {
+  background: none;
+  border: none;
+  color: var(--gray-lt);
+  cursor: pointer;
+  padding: 7px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    color 0.2s,
+    background 0.2s;
+  position: relative;
+}
+.nav-btn:hover {
+  color: var(--neon-ink);
+  background: var(--neon-dim);
+}
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--gray-lt);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  flex-direction: column;
+  gap: 5px;
+  transition: color 0.2s;
+}
+.nav-toggle:hover {
+  color: var(--neon-ink);
+}
+.nav-toggle .bar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: currentColor;
+  transition:
+    transform 0.3s,
+    opacity 0.3s;
+}
+.nav.open .nav-toggle .bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.nav.open .nav-toggle .bar:nth-child(2) {
+  opacity: 0;
+}
+.nav.open .nav-toggle .bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  border: 0;
+}
+.nav-backdrop.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+.theme-btn {
+  width: 40px;
+  height: 21px;
+  background: var(--s2);
+  border: 1px solid var(--s3);
+  border-radius: 11px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.3s;
+  flex-shrink: 0;
+}
+.theme-btn::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 17px;
+  height: 17px;
+  border-radius: 9px;
+  background: var(--neon);
+  transition: transform 0.3s;
+}
+[data-theme='light'] .theme-btn::after {
+  transform: translateX(19px);
+}
+
+/* ==============================  BOTÕES  ================================= */
+
+.btn-p,
+.btn-o {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 17px 38px;
+  border-radius: 3px;
+  font-family: var(--fc);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-p {
+  background: var(--neon);
+  color: #0a0a0a;
+  border: none;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+.btn-p:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 36px rgba(57, 255, 20, 0.4);
+}
+.btn-o {
+  background: transparent;
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  transition:
+    border-color 0.2s,
+    color 0.2s,
+    transform 0.2s;
+}
+[data-theme='light'] .btn-o {
+  border-color: rgba(0, 0, 0, 0.24);
+}
+.btn-o:hover {
+  border-color: var(--neon-ink);
+  color: var(--neon-ink);
+  transform: translateY(-3px);
+}
+.btn-c {
+  background: var(--s3);
+  border: none;
+  color: var(--white);
+  padding: 11px 18px;
+  border-radius: 3px;
+  cursor: pointer;
+  /* No original era um <button>; agora é um <a> e herdaria o sublinhado. */
+  text-decoration: none;
+  font-family: var(--fc);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    filter 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+/* O verde de marca (#25D366) com texto branco dá 1,98:1. Para o botão com
+   TEXTO usamos o verde escuro do WhatsApp, que passa em AA (4,6:1). */
+.btn-wa {
+  background: #128c7e;
+  color: #fff;
+}
+.btn-wa:hover {
+  filter: brightness(1.1);
+}
+.btn-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 18px;
+  border-radius: 3px;
+  font-family: var(--fc);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition:
+    border-color 0.2s,
+    color 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
+  white-space: nowrap;
+}
+.btn-sm-g {
+  background: var(--neon);
+  color: #0a0a0a;
+}
+.btn-sm-g:hover {
+  box-shadow: 0 4px 20px rgba(57, 255, 20, 0.4);
+  transform: translateY(-1px);
+}
+.btn-sm-o {
+  background: transparent;
+  color: var(--gray-lt);
+  border: 1px solid var(--s3);
+}
+.btn-sm-o:hover {
+  border-color: var(--neon-ink);
+  color: var(--neon-ink);
+}
+
+/* ==============================  SEÇÕES  ================================= */
+
+.sec {
+  padding: 120px 56px;
+}
+.sec-lbl {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--neon-ink);
+  font-family: var(--fc);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+.sec-lbl::before {
+  content: '';
+  width: 28px;
+  height: 1px;
+  background: var(--neon);
+}
+.sec-ttl {
+  font-family: var(--fd);
+  font-size: clamp(44px, 6vw, 92px);
+  line-height: 0.94;
+  color: var(--white);
+  margin-bottom: 16px;
+}
+.sec-sub {
+  font-size: 19px;
+  font-weight: 300;
+  color: var(--gray);
+  line-height: 1.65;
+  max-width: 560px;
+}
+.neon-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--neon) 50%,
+    transparent 100%
+  );
+  opacity: 0.4;
+}
+
+/* =========================  CARD DE PRODUTO  ============================= */
+/* Compartilhado entre a home (destaques) e o catálogo.                      */
+
+.pgrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.pgrid.list {
+  grid-template-columns: 1fr;
+}
+.pcard {
+  background: var(--s1);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--s3);
+  cursor: pointer;
+  position: relative;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.4s,
+    transform 0.3s;
+}
+.pcard:hover {
+  border-color: rgba(57, 255, 20, 0.5);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.6);
+  transform: translateY(-4px);
+}
+.pcard.list-card {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+}
+.pimg {
+  height: 220px;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+  flex-shrink: 0;
+}
+.list-card .pimg {
+  height: 100%;
+  min-height: 200px;
+}
+.pimg img {
+  object-fit: contain;
+  padding: 14px;
+  transition: transform 0.6s ease;
+}
+.pcard:hover .pimg img {
+  transform: scale(1.05);
+}
+.ptag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+  background: var(--neon);
+  color: #0a0a0a;
+  font-family: var(--fc);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 2px;
+}
+.p360 {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-family: var(--fc);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  pointer-events: none;
+}
+.pcard:hover .p360 {
+  opacity: 1;
+}
+.pbody {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+}
+.list-card .pbody {
+  padding: 28px;
+}
+.pcat {
+  font-family: var(--fc);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--neon-ink);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.pname {
+  font-family: var(--fc);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 12px;
+  line-height: 1.15;
+}
+/* Stretched link: o nome do produto é a âncora, mas a área clicável é o card
+   inteiro. Mantém o HTML válido e o botão do WhatsApp acessível por cima. */
+.pname-link {
+  color: inherit;
+  text-decoration: none;
+}
+.pname-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.pcard .pfooter {
+  position: relative;
+  z-index: 2;
+}
+.pcard .ptag {
+  z-index: 3;
+}
+.pdesc {
+  font-size: 17px;
+  color: var(--gray);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.pgrid:not(.list) .pdesc {
+  display: none;
+}
+.pspecs {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.pspec {
+  font-size: 15px;
+  color: var(--gray);
+}
+.pspec span {
+  display: block;
+  font-weight: 700;
+  color: var(--gray-lt);
+  font-size: 18px;
+  margin-top: 2px;
+}
+.pfooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--s3);
+  padding-top: 12px;
+  gap: 12px;
+}
+.pprice {
+  font-family: var(--fc);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--white);
+}
+.pprice small {
+  font-size: 15px;
+  color: var(--gray);
+  font-weight: 400;
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* ===========================  SCROLL REVEAL  ============================= */
+
+/* Só esconde quando existe JS para revelar de novo: sem o `.js` no <html>
+   (script inline do layout) o conteúdo nasce visível, em vez de ficar
+   permanentemente em opacity:0. */
+.js .rev {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+.rev.vis {
+  opacity: 1;
+  transform: translateY(0);
+}
+.stg .rev:nth-child(1) {
+  transition-delay: 0s;
+}
+.stg .rev:nth-child(2) {
+  transition-delay: 0.08s;
+}
+.stg .rev:nth-child(3) {
+  transition-delay: 0.16s;
+}
+.stg .rev:nth-child(4) {
+  transition-delay: 0.24s;
+}
+.stg .rev:nth-child(5) {
+  transition-delay: 0.32s;
+}
+.stg .rev:nth-child(6) {
+  transition-delay: 0.4s;
+}
+.stg .rev:nth-child(7) {
+  transition-delay: 0.48s;
+}
+.stg .rev:nth-child(8) {
+  transition-delay: 0.56s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rev {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ==========================  BOTÃO WHATSAPP  ============================= */
+
+.wa {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 56px;
+  height: 56px;
+  background: var(--wa);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 900;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  animation: wap 2s ease infinite;
+  transition: transform 0.2s;
+}
+.wa:hover {
+  transform: scale(1.12);
+  animation: none;
+}
+
+/* =============================  BREADCRUMB  ============================== */
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--fc);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray);
+  flex-wrap: wrap;
+}
+.breadcrumb a {
+  color: var(--gray);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.breadcrumb a:hover {
+  color: var(--neon-ink);
+}
+.breadcrumb .sep {
+  color: var(--s3);
+}
+.breadcrumb .cur {
+  color: var(--neon-ink);
+}
+
+/* ==============================  RODAPÉ  ================================= */
+
+.footer {
+  background: var(--black);
+  border-top: 1px solid var(--s3);
+  padding: 80px 56px 40px;
+}
+.footer-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.fg {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 56px;
+  margin-bottom: 56px;
+}
+.flogo {
+  font-size: 30px;
+  line-height: 1;
+  margin-bottom: 18px;
+}
+.ftagline {
+  font-size: 16px;
+  color: var(--gray);
+  line-height: 1.65;
+  margin-bottom: 22px;
+}
+.fct {
+  font-family: var(--fc);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 18px;
+}
+.flinks {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.flinks a {
+  color: var(--gray);
+  text-decoration: none;
+  font-size: 16px;
+  transition: color 0.2s;
+}
+.flinks a:hover {
+  color: var(--neon-ink);
+}
+.fbot {
+  border-top: 1px solid var(--s3);
+  padding-top: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.fcopy {
+  font-size: 14px;
+  color: var(--gray);
+}
+.flegal {
+  display: flex;
+  gap: 20px;
+}
+.flegal a {
+  color: var(--gray);
+  font-size: 14px;
+  text-decoration: none;
+}
+.flegal a:hover {
+  color: var(--neon-ink);
+}
+
+/* ============================  ANIMAÇÕES  ================================ */
+
+@keyframes fiu {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fid {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(7px);
+  }
+}
+@keyframes wap {
+  0%,
+  100% {
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  }
+  50% {
+    box-shadow:
+      0 4px 36px rgba(37, 211, 102, 0.65),
+      0 0 0 8px rgba(37, 211, 102, 0.1);
+  }
+}
+
+/* ============================  RESPONSIVO  =============================== */
+
+@media (max-width: 1100px) {
+  .pgrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .fg {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 900px) {
+  .nav {
+    padding: 0 20px;
+    gap: 16px;
+  }
+  .nav-logo {
+    font-size: 22px;
+    line-height: 48px;
+  }
+  .nav-acts {
+    margin-left: auto;
+  }
+  .nav-toggle {
+    display: flex;
+  }
+  .nav-links {
+    position: fixed;
+    top: var(--nav);
+    right: 0;
+    width: min(320px, 82vw);
+    height: calc(100vh - var(--nav));
+    background: var(--nav-panel);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 32px 28px;
+    gap: 6px;
+    flex: none;
+    transform: translateX(105%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 1px solid var(--s3);
+    z-index: 999;
+    overflow-y: auto;
+  }
+  .nav.open .nav-links {
+    transform: translateX(0);
+  }
+  .nav-links li {
+    width: 100%;
+    border-bottom: 1px solid var(--s3);
+  }
+  .nav-links li:last-child {
+    border-bottom: none;
+  }
+  .nav-links a {
+    display: block;
+    width: 100%;
+    padding: 16px 4px;
+    font-size: 16px;
+  }
+  .nav-links a::after {
+    display: none;
+  }
+  .sec {
+    padding: 80px 24px;
+  }
+  .footer {
+    padding: 60px 24px 32px;
+  }
+  .fg {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav {
+    padding: 0 16px;
+  }
+  .nav-logo {
+    font-size: 19px;
+    line-height: 42px;
+  }
+  .nav-acts {
+    gap: 8px;
+  }
+  .pgrid {
+    grid-template-columns: 1fr;
+  }
+  .pcard.list-card {
+    grid-template-columns: 1fr;
+  }
+  .sec {
+    padding: 60px 20px;
+  }
+  .fg {
+    grid-template-columns: 1fr;
+  }
+  .fbot {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

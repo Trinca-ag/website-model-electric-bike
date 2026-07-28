@@ -1,0 +1,546 @@
+/* ==========================================================================
+   CATÁLOGO — /produtos e /produtos/[categoria]
+   Só o que é específico destas rotas. Card, grade, breadcrumb, botões e
+   reveal vêm do globals.css.
+   ========================================================================== */
+
+/* =============================  PAGE HERO  =============================== */
+
+.page-hero {
+  padding: 160px 56px 60px;
+  background: linear-gradient(to bottom, var(--s1) 0%, var(--black) 100%);
+  border-bottom: 1px solid var(--s3);
+}
+.page-hero .breadcrumb {
+  margin-bottom: 20px;
+}
+.page-hero h1 {
+  font-family: var(--fd);
+  font-size: clamp(52px, 7vw, 96px);
+  line-height: 0.95;
+  margin-bottom: 12px;
+  font-weight: 400;
+}
+.page-hero h1 .hl {
+  color: var(--neon-ink);
+}
+.page-hero p {
+  font-size: 19px;
+  font-weight: 300;
+  color: var(--gray);
+  max-width: 520px;
+}
+
+/* ---------------  Cabeçalho com foto (rotas de categoria)  --------------- */
+
+.page-hero.has-bg {
+  position: relative;
+  overflow: hidden;
+  min-height: 420px;
+  display: flex;
+  align-items: flex-end;
+  border-bottom-color: rgba(57, 255, 20, 0.18);
+  /* O texto é sempre branco sobre a foto, então o neon volta a ser o puro —
+     o verde escuro do tema claro sumiria no véu. */
+  --neon-ink: var(--neon);
+}
+.page-hero-img {
+  object-fit: cover;
+  /* object-position vem por `style` inline, por foto (ver CatalogHero). */
+  z-index: 0;
+}
+/* Véu com valores fixos (não usa var(--black)): a faixa é escura nos dois
+   temas. Mais denso à esquerda, onde ficam título e subtítulo, e no rodapé,
+   para emendar na área de filtros sem corte seco. */
+.page-hero-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      to right,
+      rgba(8, 10, 12, 0.94) 0%,
+      rgba(8, 10, 12, 0.82) 38%,
+      rgba(8, 10, 12, 0.45) 72%,
+      rgba(8, 10, 12, 0.32) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(8, 10, 12, 0.5) 0%,
+      rgba(8, 10, 12, 0.1) 32%,
+      rgba(8, 10, 12, 0.72) 100%
+    );
+}
+.page-hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+.page-hero.has-bg h1 {
+  color: #fff;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55);
+}
+.page-hero.has-bg p {
+  color: rgba(255, 255, 255, 0.82);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.6);
+}
+.page-hero.has-bg .breadcrumb a {
+  color: rgba(255, 255, 255, 0.7);
+}
+.page-hero.has-bg .breadcrumb a:hover {
+  color: var(--neon);
+}
+.page-hero.has-bg .breadcrumb .sep {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* ==============================  LAYOUT  ================================= */
+
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+  padding: 56px;
+  max-width: 1600px;
+  margin: 0 auto;
+  align-items: start;
+}
+/* Sem isto a coluna da grade não encolhe abaixo do conteúdo e estoura o layout. */
+.products-main {
+  min-width: 0;
+}
+
+/* ==============================  FILTROS  ================================
+   Geometria da coluna (distância a partir da borda direita do painel):
+
+     0–3px   barra de rolagem do painel
+     15–18px barra de rolagem da lista "Linha" (o único grupo com rolagem própria)
+     29px    contagens, "Limpar" e campos de preço — todos na mesma vertical
+
+   Os recuos abaixo existem para manter esses três trilhos. Ao mexer em um,
+   ajuste os outros: as barras precisam ficar longe do texto E uma da outra.
+   ========================================================================== */
+
+.filters {
+  position: sticky;
+  top: 100px;
+  /* Em notebook (altura útil ~600 px) o painel fica mais alto que a tela.
+     Sem teto + rolagem própria, o `sticky` prende o topo e o fim dos filtros
+     fica permanentemente abaixo da dobra: rolar a página não resolve, porque
+     o painel acompanha a rolagem. O teto abaixo dá ao painel a sua própria
+     área de rolagem, e em telas altas ele nem aparece. */
+  max-height: calc(100vh - 100px - 24px);
+  overflow-y: auto;
+  /* Sem `overscroll-behavior: contain` de propósito. O teto acima só cabe na
+     tela depois que o `sticky` prende o painel em top:100 — antes disso ele
+     nasce mais abaixo e sobra para fora. Deixando a rolagem encadear para a
+     página, quem rola com o cursor sobre os filtros avança a página, o painel
+     gruda no topo e o último filtro entra na tela. Com `contain`, a rolagem
+     morria no painel e o último filtro ficava inalcançável. */
+  scrollbar-gutter: stable;
+}
+
+/* Em telas baixas, encurta a sublista de linhas para reduzir a rolagem
+   aninhada e deixar os grupos seguintes visíveis sem tanto esforço. */
+@media (max-height: 820px) {
+  .filter-opts.scroll {
+    max-height: 132px;
+  }
+}
+.filter-toggle {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: var(--s2);
+  border: 1px solid var(--s3);
+  color: var(--white);
+  padding: 10px 16px;
+  border-radius: 3px;
+  font-family: var(--fc);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+.filter-toggle:hover {
+  border-color: var(--neon-ink);
+  color: var(--neon-ink);
+}
+.filter-toggle .badge {
+  background: var(--neon);
+  color: #0a0a0a;
+  font-size: 12px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-weight: 800;
+}
+.filters-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  border: 0;
+  padding: 0;
+}
+.filters-backdrop.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+.filters-close {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--gray);
+  cursor: pointer;
+  padding: 6px;
+}
+.filters-close:hover {
+  color: var(--white);
+}
+.filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 28px;
+  /* Ver "geometria da coluna" abaixo. */
+  padding-right: 26px;
+}
+.filter-header-acts {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.filter-title {
+  font-family: var(--fd);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--white);
+}
+.filter-clear {
+  background: none;
+  border: none;
+  color: var(--neon-ink);
+  font-family: var(--fc);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.filter-clear:hover {
+  opacity: 0.7;
+}
+.filter-group {
+  margin: 0 0 28px;
+  padding: 0 0 28px;
+  border: none;
+  border-bottom: 1px solid var(--s3);
+  /* fieldset tem min-width:min-content por padrão — zera para não estourar. */
+  min-width: 0;
+}
+.filter-group:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+/* `legend` como bloco normal: o fieldset não tem borda superior para "cortar",
+   e assim margin-bottom se comporta igual em todos os navegadores. */
+.filter-group-title {
+  display: block;
+  float: none;
+  width: 100%;
+  font-family: var(--fc);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 14px;
+  padding: 0;
+}
+.filter-opts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 26px;
+}
+/* A lista de linhas pode ficar longa no catálogo completo. */
+.filter-opts.scroll {
+  max-height: 200px;
+  overflow-y: auto;
+  /* Este grupo tem barra própria. A margem tira a barra dele de cima da barra
+     do painel; o padding menor compensa a margem, para que as contagens caiam
+     na mesma linha vertical das dos outros grupos. */
+  margin-right: 12px;
+  padding-right: 11px;
+  /* `stable` reserva a calha mesmo sem rolagem: a lista não "pula" 3px de
+     lado quando um filtro reduz a quantidade de linhas visíveis. */
+  scrollbar-gutter: stable;
+}
+.fopt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+.fopt input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--neon-ink);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.fopt label {
+  font-size: 16px;
+  color: var(--gray-lt);
+  cursor: pointer;
+  transition: color 0.2s;
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.fopt:hover label {
+  color: var(--neon-ink);
+}
+.fopt-count {
+  font-size: 14px;
+  color: var(--gray);
+}
+.price-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+  padding-right: 26px;
+}
+.price-input {
+  background: var(--s2);
+  border: 1px solid var(--s3);
+  color: var(--white);
+  padding: 10px 12px;
+  border-radius: 3px;
+  font-family: var(--fb);
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.price-input:focus {
+  border-color: var(--neon-ink);
+}
+
+/* ===========================  PILLS DE CATEGORIA  ======================== */
+
+.cat-pills {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+.cpill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 100px;
+  font-family: var(--fc);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid var(--s3);
+  color: var(--gray-lt);
+  background: transparent;
+  transition:
+    border-color 0.2s,
+    color 0.2s,
+    background 0.2s;
+}
+.cpill:hover {
+  border-color: var(--neon-ink);
+  color: var(--neon-ink);
+}
+.cpill.on {
+  background: var(--neon);
+  color: #0a0a0a;
+  border-color: var(--neon-ink);
+}
+
+/* ==========================  BARRA DE ORDENAÇÃO  ========================= */
+
+.sort-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.result-count {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-family: var(--fc);
+  font-size: 16px;
+  color: var(--gray);
+}
+.result-count-text {
+  color: var(--white);
+  font-weight: 700;
+}
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sort-select {
+  background: var(--s2);
+  border: 1px solid var(--s3);
+  color: var(--white);
+  padding: 9px 14px;
+  border-radius: 3px;
+  font-family: var(--fc);
+  font-size: 15px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.sort-select:focus {
+  border-color: var(--neon-ink);
+}
+.view-btns {
+  display: flex;
+  gap: 4px;
+}
+.view-btn {
+  background: var(--s2);
+  border: 1px solid var(--s3);
+  color: var(--gray);
+  padding: 8px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s;
+  display: flex;
+  align-items: center;
+}
+.view-btn:hover {
+  border-color: var(--neon-ink);
+  color: var(--neon-ink);
+}
+.view-btn.on {
+  background: var(--neon-dim);
+  border-color: var(--neon-ink);
+  color: var(--neon-ink);
+}
+
+/* ============================  ESTADO VAZIO  ============================= */
+
+.empty {
+  text-align: center;
+  padding: 80px 24px;
+  color: var(--gray);
+}
+.empty-icon {
+  font-size: 64px;
+  line-height: 1;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+.empty-title {
+  font-family: var(--fc);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--white);
+}
+.empty p {
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+/* ============================  RESPONSIVO  =============================== */
+
+@media (min-width: 901px) {
+  /* O backdrop só existe no modo gaveta. */
+  .filters-backdrop {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .page-hero {
+    padding: 140px 24px 48px;
+  }
+  .page-hero h1 {
+    font-size: clamp(48px, 11vw, 88px);
+  }
+  .layout {
+    grid-template-columns: 1fr;
+    padding: 24px;
+    gap: 24px;
+  }
+  .filter-toggle {
+    display: inline-flex;
+  }
+  .filters-close {
+    display: flex;
+    align-items: center;
+  }
+  .filters {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(340px, 88vw);
+    height: 100vh;
+    height: 100dvh;
+    background: var(--black);
+    z-index: 1101;
+    transform: translateX(-105%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 24px 24px 80px;
+    overflow-y: auto;
+    border-right: 1px solid var(--s3);
+  }
+  .filters.open {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .page-hero {
+    padding: 120px 20px 36px;
+  }
+  .page-hero p {
+    font-size: 16px;
+  }
+  .layout {
+    padding: 20px;
+  }
+  .sort-bar {
+    align-items: flex-start;
+  }
+}
+
+/* A gaveta abre sem deslizar para quem pede menos movimento. */
+@media (prefers-reduced-motion: reduce) {
+  .filters,
+  .filters-backdrop {
+    transition: none;
+  }
+}
