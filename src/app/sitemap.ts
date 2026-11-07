@@ -3,6 +3,9 @@ import type { MetadataRoute } from 'next'
 import { CATEGORY_IDS, PRODUCTS } from '@/data/products'
 import { SITE } from '@/data/site'
 
+// Necessário para `output: 'export'` — sem params dinâmicos, é gerado uma vez no build de qualquer forma.
+export const dynamic = 'force-static'
+
 /** NEXT_PUBLIC_SITE_URL pode vir com barra final; o sitemap não pode gerar `//`. */
 const BASE = SITE.url.replace(/\/+$/, '')
 

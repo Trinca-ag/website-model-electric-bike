@@ -2,6 +2,9 @@ import type { MetadataRoute } from 'next'
 
 import { SITE } from '@/data/site'
 
+// Necessário para `output: 'export'` — sem params dinâmicos, é gerado uma vez no build de qualquer forma.
+export const dynamic = 'force-static'
+
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: `${SITE.name} – ${SITE.tagline}`,

@@ -102,10 +102,18 @@ export interface HeroSlide {
   readonly poster: string
 }
 
+// Vídeos são <video src> cru (não passam por next/image), então precisam do
+// prefixo manual quando exportados sob basePath — Next só faz isso sozinho
+// para next/image, next/link e assets do próprio _next.
+// NEXT_PUBLIC_ é obrigatório aqui: este módulo é importado pelo HeroCarousel,
+// que é 'use client'. Sem o prefixo o Next não injeta a variável no bundle do
+// navegador e o valor chegaria como undefined lá.
+const BASE_PATH = process.env.NEXT_PUBLIC_STATIC_EXPORT === '1' ? '/cavalletta-model' : ''
+
 export const HERO_SLIDES: readonly HeroSlide[] = [
-  { src: '/media/video/banner-1.mp4', poster: '/media/video/poster-1.jpg' },
-  { src: '/media/video/banner-2.mp4', poster: '/media/video/poster-2.jpg' },
-  { src: '/media/video/banner-3.mp4', poster: '/media/video/poster-3.jpg' },
+  { src: `${BASE_PATH}/media/video/banner-1.mp4`, poster: '/media/video/poster-1.jpg' },
+  { src: `${BASE_PATH}/media/video/banner-2.mp4`, poster: '/media/video/poster-2.jpg' },
+  { src: `${BASE_PATH}/media/video/banner-3.mp4`, poster: '/media/video/poster-3.jpg' },
 ]
 
 export const FOOTER_SECTIONS = [

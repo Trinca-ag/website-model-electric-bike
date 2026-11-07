@@ -1,6 +1,8 @@
 import { ImageResponse } from 'next/og'
 
 // Favicon gerado no build a partir do wordmark — dispensa manter um .png à parte.
+// dynamic='force-static' é necessário para `output: 'export'`.
+export const dynamic = 'force-static'
 export const size = { width: 64, height: 64 }
 export const contentType = 'image/png'
 

@@ -14,6 +14,12 @@ interface HeroCarouselProps {
 const TOTAL = HERO_SLIDES.length
 const POSTER = HERO_SLIDES[0]?.poster
 
+// No export estático (a cópia que vive embedada no portfólio da Trinca) o
+// hero aparece em miniatura dentro de um card. Os três clipes somam ~4,4 MB
+// e travavam o carregamento do portfólio, ainda mais no celular: ali fica
+// só o poster, mesmo caminho já usado pra prefers-reduced-motion.
+const EMBEDDED = process.env.NEXT_PUBLIC_STATIC_EXPORT === '1'
+
 /**
  * Carrossel de vídeo do hero.
  *
@@ -33,6 +39,7 @@ export default function HeroCarousel({ children }: HeroCarouselProps) {
   const videos = useRef<(HTMLVideoElement | null)[]>([])
 
   useEffect(() => {
+    if (EMBEDDED) return
     const query = window.matchMedia('(prefers-reduced-motion: reduce)')
     const sync = () => setEnabled(!query.matches)
     sync()
